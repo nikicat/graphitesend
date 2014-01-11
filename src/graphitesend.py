@@ -265,7 +265,7 @@ class GraphiteClient(object):
         else:
             timestamp = int(timestamp)
 
-        if type(value) in [str, unicode]:
+        if type(value) in [str, bytes]:
             value = float(value)
 
         metric = self.clean_metric_name(metric)
