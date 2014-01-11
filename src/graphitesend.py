@@ -203,7 +203,7 @@ class GraphiteClient(object):
             )
 
         try:
-            self.socket.sendall(message)
+            self.socket.sendall(message.encode())
 
         # Capture missing socket.
         except socket.gaierror as error:
@@ -305,7 +305,7 @@ class GraphiteClient(object):
         metric_list = []
 
         for metric, value in list(data.items()):
-            if type(value).__name__ in ['str', 'unicode']:
+            if type(value) in [str, bytes]:
                 value = float(value)
             metric = self.clean_metric_name(metric)
             tmp_message = "%s%s%s %f %d\n" % (self.prefix, metric,
