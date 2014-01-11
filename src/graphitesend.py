@@ -269,7 +269,7 @@ class GraphiteClient(object):
             value = float(value)
 
         metric = self.clean_metric_name(metric)
-        logger.debug("sending {}={}".format(metric, value))
+        logger.debug("{}{}{}={}".format(self.prefix, metric, self.suffix, value))
 
         message = "%s%s%s %f %d\n" % (self.prefix, metric, self.suffix,
                                       value, timestamp)
@@ -308,7 +308,7 @@ class GraphiteClient(object):
             if type(value) in [str, bytes]:
                 value = float(value)
             metric = self.clean_metric_name(metric)
-            logger.debug("sending {}={}".format(metric, value))
+            logger.debug("sending {}{}{}={}".format(self.prefix, metric, self.suffix, value))
             tmp_message = "%s%s%s %f %d\n" % (self.prefix, metric,
                                               self.suffix, value, timestamp)
             metric_list.append(tmp_message)
@@ -353,11 +353,11 @@ class GraphiteClient(object):
                 (metric, value) = metric_info
                 metric_timestamp = timestamp
 
-            if type(value).__name__ in ['str', 'unicode']:
-                print("metric='%(metric)s'  value='%(value)s'" % locals())
+            if type(value) in [str, bytes]:
                 value = float(value)
 
             metric = self.clean_metric_name(metric)
+            logger.debug("sending {}{}{}={}".format(self.prefix, metric, self.suffix, value))
 
             tmp_message = "%s%s%s %f %d\n" % (self.prefix, metric,
                                               self.suffix, value, metric_timestamp)
