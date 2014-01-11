@@ -267,9 +267,9 @@ class GraphiteClient(object):
         if type(value).__name__ in ['str', 'unicode']:
             value = float(value)
 
-        print "metric: '%s'" % metric
+        print("metric: '%s'" % metric)
         metric = self.clean_metric_name(metric)
-        print "metric: '%s'" % metric
+        print("metric: '%s'" % metric)
 
         message = "%s%s%s %f %d\n" % (self.prefix, metric, self.suffix,
                                       value, timestamp)
@@ -304,7 +304,7 @@ class GraphiteClient(object):
 
         metric_list = []
 
-        for metric, value in data.items():
+        for metric, value in list(data.items()):
             if type(value).__name__ in ['str', 'unicode']:
                 value = float(value)
             metric = self.clean_metric_name(metric)
@@ -353,7 +353,7 @@ class GraphiteClient(object):
                 metric_timestamp = timestamp
 
             if type(value).__name__ in ['str', 'unicode']:
-                print "metric='%(metric)s'  value='%(value)s'" % locals()
+                print("metric='%(metric)s'  value='%(value)s'" % locals())
                 value = float(value)
 
             metric = self.clean_metric_name(metric)

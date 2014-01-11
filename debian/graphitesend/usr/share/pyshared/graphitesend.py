@@ -169,7 +169,7 @@ class GraphiteClient(object):
 
         metric_list = []
 
-        for metric, value in data.items():
+        for metric, value in list(data.items()):
             if type(value).__name__ in ['str','unicode']:
                 value = float(value)
             tmp_message = "%s%s%s %f %d\n" % (self.prefix, metric,
@@ -192,7 +192,7 @@ class GraphiteClient(object):
 
         for metric, value in data:
             if type(value).__name__ in ['str','unicode']:
-                print "metric='%(metric)s'  value='%(value)s'" % locals()
+                print("metric='%(metric)s'  value='%(value)s'" % locals())
                 value = float(value)
             tmp_message = "%s%s%s %f %d\n" % (self.prefix, metric,
                                               self.suffix, value, timestamp)
@@ -275,7 +275,7 @@ def cli():
 
 def main():
     """ Basic testing. """
-    print "Sending test metric 'graphitesend_test'"
+    print("Sending test metric 'graphitesend_test'")
     graphitesend_instance = init()
     graphitesend_instance.send('graphitesend_test', 54)
 
