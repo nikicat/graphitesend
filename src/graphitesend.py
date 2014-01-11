@@ -5,6 +5,7 @@ import socket
 import os
 import pickle
 import struct
+import logging
 _module_instance = None
 __version__ = "0.3.0"
 
@@ -16,6 +17,7 @@ default_graphite_pickle_port = 2004
 class GraphiteSendException(Exception):
     pass
 
+logger = logging.getLogger('graphitesend')
 
 class GraphiteClient(object):
     """
@@ -96,7 +98,6 @@ class GraphiteClient(object):
         if connect_on_create:
             self.socket = self.connect()
 
-        self.debug = debug
         self.lastmessage = None
 
         self.lowercase_metric_names = lowercase_metric_names
@@ -264,12 +265,11 @@ class GraphiteClient(object):
         else:
             timestamp = int(timestamp)
 
-        if type(value).__name__ in ['str', 'unicode']:
+        if type(value) in [str, unicode]:
             value = float(value)
 
-        print("metric: '%s'" % metric)
         metric = self.clean_metric_name(metric)
-        print("metric: '%s'" % metric)
+        logger.debug("sending {}={}".format(metric, value))
 
         message = "%s%s%s %f %d\n" % (self.prefix, metric, self.suffix,
                                       value, timestamp)
@@ -308,6 +308,7 @@ class GraphiteClient(object):
             if type(value) in [str, bytes]:
                 value = float(value)
             metric = self.clean_metric_name(metric)
+            logger.debug("sending {}={}".format(metric, value))
             tmp_message = "%s%s%s %f %d\n" % (self.prefix, metric,
                                               self.suffix, value, timestamp)
             metric_list.append(tmp_message)
