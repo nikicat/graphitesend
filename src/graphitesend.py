@@ -260,26 +260,7 @@ class GraphiteClient(object):
           >>> g.send(metric="metricname", value=73)
 
         """
-        if timestamp is None:
-            timestamp = int(time.time())
-        else:
-            timestamp = int(timestamp)
-
-        if type(value) in [str, bytes]:
-            value = float(value)
-
-        metric = self.clean_metric_name(metric)
-        logger.debug("{}{}{}={}".format(self.prefix, metric, self.suffix, value))
-
-        message = "%s%s%s %f %d\n" % (self.prefix, metric, self.suffix,
-                                      value, timestamp)
-
-        message = self. _presend(message)
-
-        if self.dryrun:
-            return message
-
-        return self._send(message)
+        return self.send_list([(metric,value)], timestamp)
 
     def send_dict(self, data, timestamp=None):
         """ 
@@ -297,24 +278,7 @@ class GraphiteClient(object):
           >>> g.send_dict({'metric1': 54, 'metric2': 43, 'metricN': 999})
 
         """
-        if timestamp is None:
-            timestamp = int(time.time())
-        else:
-            timestamp = int(timestamp)
-
-        metric_list = []
-
-        for metric, value in list(data.items()):
-            if type(value) in [str, bytes]:
-                value = float(value)
-            metric = self.clean_metric_name(metric)
-            logger.debug("sending {}{}{}={}".format(self.prefix, metric, self.suffix, value))
-            tmp_message = "%s%s%s %f %d\n" % (self.prefix, metric,
-                                              self.suffix, value, timestamp)
-            metric_list.append(tmp_message)
-
-        message = "".join(metric_list)
-        return self._send(message)
+        return self.send_list(data.items(), timestamp)
 
     def send_list(self, data, timestamp=None):
         """ 
@@ -357,13 +321,14 @@ class GraphiteClient(object):
                 value = float(value)
 
             metric = self.clean_metric_name(metric)
-            logger.debug("sending {}{}{}={}".format(self.prefix, metric, self.suffix, value))
 
             tmp_message = "%s%s%s %f %d\n" % (self.prefix, metric,
                                               self.suffix, value, metric_timestamp)
+            logger.debug("sending {}".format(tmp_message))
             metric_list.append(tmp_message)
 
         message = "".join(metric_list)
+        message = self._presend(message)
         return self._send(message)
 
 
@@ -381,8 +346,8 @@ class GraphitePickleClient(GraphiteClient):
     def str2listtuple(self, string_message):
         "Covert a string that is ready to be sent to graphite into a tuple"
 
-        if type(string_message).__name__ not in ('str', 'unicode'):
-            raise TypeError("Must provide a string or unicode")
+        if type(string_message) not in (str, bytes):
+            raise TypeError("Must provide a string or bytes")
 
         tpl_list = []
         for line in string_message.split('\n'):
